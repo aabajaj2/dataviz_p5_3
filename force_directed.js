@@ -8,6 +8,8 @@ var edges = [];
 place_nodes_x = [];
 place_nodes_y = [];
 var V;
+var k;
+var t = 1;
 
 function preload() {
   //my table is comma separated value "csv“ and has a header specifying the columns labels
@@ -57,33 +59,45 @@ function setup() {
   console.log(absolute_value(check));
   console.log(ans);
 
-  //Graph Algorithm
+  //Graph Algorithm Setup
   k = Math.sqrt(area/V);
   print(k);
   for (var i = 0; i < V; i++) {
     vertices.push(new vertex(0, 0, place_nodes_x[i], place_nodes_y[i], xvertices[i]));
   }
-  console.log("LENGTH PF "+vertices.length);
+
   for (var i = 0; i < xaxis.length; i++) {
     v1 = xlookup(xaxis[i]);
     v2 = xlookup(yaxis[i]);
     edges.push(new edge(v1, v2));
   }
   console.log(edges);
-
   // noLoop();
 }
 
 function draw(){
 
   background(255);
-
+  shift = 10;
   //randomly disperse nodes
-  for (var i = 0; i < place_nodes_x.length; i++) {
-    // print(place_nodes_x[i], place_nodes_y[i]);
+  for (var i = 0; i < vertices.length; i++) {
     fill('aqua');
-    ellipse(place_nodes_x[i], place_nodes_y[i], 10, 10);
+    ellipse(vertices[i].pos.x, vertices[i].pos.y, 10, 10);
+
+      if (mouseX<=place_nodes_x[i]+shift && mouseX>=place_nodes_x[i]-shift
+        && mouseY<=place_nodes_y[i]+shift && mouseY>=place_nodes_y[i]-shift){
+        fill("black");
+        pos_string=""+vertices[i].value;
+        text(pos_string,mouseX,mouseY);fill("pink");
+      }
+    }
+
+  for (var i = 0; i < edges.length; i++) {
+    stroke('grey');
+    line(edges[i].v1.pos.x, edges[i].v1.pos.y, edges[i].v2.pos.x, edges[i].v2.pos.y);
   }
+  stroke('black');
+  graph_algorithm();
 }
 
 function create_random_array(num_elements,min,max) {
@@ -140,14 +154,6 @@ function absolute_value(v) {
   return (Math.sqrt(Math.pow(v.x, 2) + Math.pow(v.y, 2)));
 }
 
-function ylookup(v, index) {
-  for (var i = index+1; i < vertices.length; i++) {
-    if(vertices[i].value == v){
-      return vertices[i];
-    }
-  }
-}
-
 function xlookup(v) {
   for (var i = 0; i < vertices.length; i++) {
     if(vertices[i].value == v){
@@ -157,10 +163,50 @@ function xlookup(v) {
   }
 }
 
+function cool(t){
+  return (t-(1/t));
+}
 
-//
-// Rectangle.prototype.area = function() {
-//   return this.width * this.height;
-// };
-//
-// var shape = new Rectangle( 3, 4 );
+function graph_algorithm() {
+  for (var i = 0; i < vertices.length; i++) {
+    vertices[i].disp.x = 0;
+    vertices[i].disp.y = 0;
+    for (var j = 0; j < vertices.length; j++) {
+      if(vertices[j] != vertices[i]){
+        d = delta(vertices[i], vertices[j]);
+        vertices[i].disp.x = vertices[i].disp.x + (d.x/absolute_value(d)
+        * calculate_repulsive_force(absolute_value(d), k));
+        vertices[i].disp.y = vertices[i].disp.y + (d.y/absolute_value(d)
+        * calculate_repulsive_force(absolute_value(d), k));
+      }
+      // console.log(vertices[j].pos.x, vertices[j].pos.y);
+    }
+    for (var i = 0; i < edges.length; i++) {
+      d = delta(edges[i].v1, edges[i].v2);
+      edges[i].v1.disp.x = edges[i].v1.disp.x + (d.x/absolute_value(d)
+      * calculate_repulsive_force(absolute_value(d), k));
+      edges[i].v1.disp.y = edges[i].v1.disp.y + (d.y/absolute_value(d)
+      * calculate_repulsive_force(absolute_value(d), k));
+      edges[i].v2.disp.x = edges[i].v2.disp.x + (d.x/absolute_value(d)
+      * calculate_repulsive_force(absolute_value(d), k));
+      edges[i].v2.disp.y = edges[i].v2.disp.y + (d.y/absolute_value(d)
+      * calculate_repulsive_force(absolute_value(d), k));
+      if(edges[i].v1.disp.x > t)edges[i].v1.disp.x = t;
+      if(edges[i].v1.disp.y > t)edges[i].v1.disp.y = t;
+      if(edges[i].v2.disp.x > t)edges[i].v2.disp.x = t;
+      if(edges[i].v2.disp.y > t)edges[i].v2.disp.y = t;
+    }
+    w = 2000; l=2000;
+    for (var v = 0; v < vertices.length; v++) {
+      vertices[v].pos.x = (vertices[v].pos.x + (vertices[v].disp.x/absolute_value(vertices[v].disp))
+      * min(vertices[v].disp.x, t));
+      vertices[v].pos.y = (vertices[v].pos.y + (vertices[v].disp.y/absolute_value(vertices[v].disp))
+      * min(vertices[v].disp.y, t));
+      // console.log((min (w/2 , max((-w/2), vertices[v].pos.x)), (min (l/2 , max((-l/2), vertices[v].pos.y))));
+      vertices[v].pos.x = min (w/2 , max((-w/2), vertices[v].pos.x));
+      vertices[v].pos.y = min (l/2 , max((-l/2), vertices[v].pos.y));
+    }
+  t = cool(t);
+  }
+  return true;
+}

@@ -4,7 +4,7 @@ var yaxis = [];
 var vertices = [];
 var xvertices = [];
 var yvertices = [];
-
+var edges = [];
 place_nodes_x = [];
 place_nodes_y = [];
 var V;
@@ -60,10 +60,14 @@ function setup() {
   //Graph Algorithm
   k = Math.sqrt(area/V);
   print(k);
-  for (var i = 0; i < place_nodes_x.length; i++) {
-    vertices.push(new vertex(0, 0, place_nodes_x[i], place_nodes_y[i]));
+  for (var i = 0; i < V; i++) {
+    vertices.push(new vertex(0, 0, place_nodes_x[i], place_nodes_y[i], xaxis[i]));
   }
-  console.log(vertices);
+  // console.log(vertices);
+  for (var i = 0; i < xaxis.length; i++) {
+    edges.push(new edge(xlookup(xaxis[i], i), ylookup(yaxis[i], i)));
+  }
+  console.log(edges);
 
   // noLoop();
 }
@@ -97,9 +101,10 @@ function random_number(min,max) {
 }
 
 class vertex {
-  constructor(dispx, dispy, posx, posy) {
+  constructor(dispx, dispy, posx, posy, value) {
     this.disp = new vector(dispx, dispy);
     this.pos = new vector(posx, posy);
+    this.value = value;
   }
 }
 
@@ -131,6 +136,22 @@ function delta(v, u) {
 
 function absolute_value(v) {
   return (Math.sqrt(Math.pow(v.x, 2) + Math.pow(v.y, 2)));
+}
+
+function ylookup(v, index) {
+  for (var i = index+1; i < vertices.length; i++) {
+    if(vertices[i].value == v){
+      return vertices[i];
+    }
+  }
+}
+
+function xlookup(v, index) {
+  for (var i = index+1; i < vertices.length; i++) {
+    if(vertices[i].value == v){
+      return vertices[i];
+    }
+  }
 }
 
 

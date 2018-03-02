@@ -61,11 +61,13 @@ function setup() {
   k = Math.sqrt(area/V);
   print(k);
   for (var i = 0; i < V; i++) {
-    vertices.push(new vertex(0, 0, place_nodes_x[i], place_nodes_y[i], xaxis[i]));
+    vertices.push(new vertex(0, 0, place_nodes_x[i], place_nodes_y[i], xvertices[i]));
   }
-  // console.log(vertices);
+  console.log("LENGTH PF "+vertices.length);
   for (var i = 0; i < xaxis.length; i++) {
-    edges.push(new edge(xlookup(xaxis[i], i), ylookup(yaxis[i], i)));
+    v1 = xlookup(xaxis[i]);
+    v2 = xlookup(yaxis[i]);
+    edges.push(new edge(v1, v2));
   }
   console.log(edges);
 
@@ -110,8 +112,8 @@ class vertex {
 
 class edge{
   constructor(v1, v2) {
-    this.v1 = new vertex(v1);
-    this.v2 = new vertex(v2);
+    this.v1 = v1;
+    this.v2 = v2;
   }
 }
 
@@ -146,9 +148,10 @@ function ylookup(v, index) {
   }
 }
 
-function xlookup(v, index) {
-  for (var i = index+1; i < vertices.length; i++) {
+function xlookup(v) {
+  for (var i = 0; i < vertices.length; i++) {
     if(vertices[i].value == v){
+      // console.log(vertices[i]);
       return vertices[i];
     }
   }

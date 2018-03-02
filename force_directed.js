@@ -1,8 +1,10 @@
 var table;
 var xaxis = [];
 var yaxis = [];
+var vertices = [];
 var xvertices = [];
 var yvertices = [];
+
 place_nodes_x = [];
 place_nodes_y = [];
 var V;
@@ -40,23 +42,28 @@ function setup() {
   miny = min(yaxis);
   maxx = max(xaxis);
   maxy = max(yaxis);
+
   V = xvertices.length;
   place_nodes_x = create_random_array(V, 50, 700);
   place_nodes_y = create_random_array(V, 50, 700);
   area = w*h;
   print(area, V);
 
-
   var myVertex = new vertex(2, 3, 4, 5);
-  var myVertex2 = new vertex(2, 3, 4, 5);
-  // var myEdge = new edge(myVertex, myVertex2);
+  var myVertex2 = new vertex(10, 10, 10, 10);
+  var myEdge = new edge(myVertex, myVertex2);
+  var ans = delta(myVertex, myVertex2);
+  var check = new vector(3, 4);
+  console.log(absolute_value(check));
+  console.log(ans);
 
   //Graph Algorithm
   k = Math.sqrt(area/V);
   print(k);
-
-  // print("Maxx and maxy="+maxx+" "+ maxy);
-  // print("Minx and miny="+minx+" "+ miny);
+  for (var i = 0; i < place_nodes_x.length; i++) {
+    vertices.push(new vertex(0, 0, place_nodes_x[i], place_nodes_y[i]));
+  }
+  console.log(vertices);
 
   // noLoop();
 }
@@ -91,15 +98,22 @@ function random_number(min,max) {
 
 class vertex {
   constructor(dispx, dispy, posx, posy) {
-    this.disp = {
-    'x': dispx,
-    'y' : dispy
-    };
-    this.pos = {
-    'x': posx,
-    'y' : posy
-    };
-    // print(this.disp.x, this.pos.y);
+    this.disp = new vector(dispx, dispy);
+    this.pos = new vector(posx, posy);
+  }
+}
+
+class edge{
+  constructor(v1, v2) {
+    this.v1 = new vertex(v1);
+    this.v2 = new vertex(v2);
+  }
+}
+
+class vector{
+  constructor(x, y){
+    this.x = x;
+    this.y = y;
   }
 }
 
@@ -110,6 +124,15 @@ function calculate_attractive_force(x, k) {
 function calculate_repulsive_force(x, k) {
   return ((k*k)/x);
 }
+
+function delta(v, u) {
+  return new vector(v.pos.x - u.pos.x, v.pos.y - u.pos.y);
+}
+
+function absolute_value(v) {
+  return (Math.sqrt(Math.pow(v.x, 2) + Math.pow(v.y, 2)));
+}
+
 
 //
 // Rectangle.prototype.area = function() {

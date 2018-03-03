@@ -13,12 +13,12 @@ var t = -1;
 
 function preload() {
   //my table is comma separated value "csv“ and has a header specifying the columns labels
-  table = loadTable('3980edges.csv', 'csv');
+  table = loadTable('5edges.csv', 'csv');
 }
 function setup() {
 
   //count the columns
-  var width = 2000, height = 2000, margin = 20,
+  var width = 1000, height = 1000, margin = 20,
   w = width - 2 * margin,
   h = height - 2 * margin;
   createCanvas(width, height);
@@ -97,9 +97,9 @@ function draw(){
     line(edges[i].v1.pos.x, edges[i].v1.pos.y, edges[i].v2.pos.x, edges[i].v2.pos.y);
   }
   stroke('black');
-  for (var i = 0; i < 10; i++) {
+  // for (var i = 0; i < 5; i++) {
     graph_algorithm();
-  }
+  // }
 }
 
 function create_random_array(num_elements,min,max) {
@@ -145,7 +145,11 @@ function calculate_attractive_force(x, k) {
 }
 
 function calculate_repulsive_force(x, k) {
-  return ((k*k)/x);
+  if(x!=0){
+    return ((k*k)/x);
+  }else {
+    return ((k*k)/0.0000001);
+  }
 }
 
 function delta(v, u) {
@@ -153,7 +157,12 @@ function delta(v, u) {
 }
 
 function absolute_value(v) {
-  return (Math.sqrt(Math.pow(v.x, 2) + Math.pow(v.y, 2)));
+  d = Math.sqrt(Math.pow(v.x, 2) + Math.pow(v.y, 2));
+  if (d==0) {
+    return 0.000001;
+  }else {
+    return d;
+  }
 }
 
 function xlookup(v) {
@@ -185,26 +194,25 @@ function graph_algorithm() {
     }
     for (var i = 0; i < edges.length; i++) {
       d = delta(edges[i].v1, edges[i].v2);
-      console.log("Delta = ", absolute_value(d));
+      // console.log("Delta = ", absolute_value(d));
 
-
-      edges[i].v1.disp.x = edges[i].v1.disp.x + (d.x/absolute_value(d)
-      * calculate_repulsive_force(absolute_value(d), k));
-      edges[i].v1.disp.y = edges[i].v1.disp.y + (d.y/absolute_value(d)
-      * calculate_repulsive_force(absolute_value(d), k));
-      edges[i].v2.disp.x = edges[i].v2.disp.x + (d.x/absolute_value(d)
-      * calculate_repulsive_force(absolute_value(d), k));
-      edges[i].v2.disp.y = edges[i].v2.disp.y + (d.y/absolute_value(d)
-      * calculate_repulsive_force(absolute_value(d), k));
-      console.log("Displacement x = ", edges[i].v1.disp.x);
-      console.log("Displacement y= ", edges[i].v1.disp.y);
+      edges[i].v1.disp.x = edges[i].v1.disp.x + (d.x/absolute_value(d))
+      * calculate_repulsive_force(absolute_value(d), k);
+      edges[i].v1.disp.y = edges[i].v1.disp.y + (d.y/absolute_value(d))
+      * calculate_repulsive_force(absolute_value(d), k);
+      edges[i].v2.disp.x = edges[i].v2.disp.x + (d.x/absolute_value(d))
+      * calculate_repulsive_force(absolute_value(d), k);
+      edges[i].v2.disp.y = edges[i].v2.disp.y + (d.y/absolute_value(d))
+      * calculate_repulsive_force(absolute_value(d), k);
+      // console.log("Displacement x = ", edges[i].v1.disp.x);
+      // console.log("Displacement y= ", edges[i].v1.disp.y);
 
       // if(edges[i].v1.disp.x > t)edges[i].v1.disp.x = t;
       // if(edges[i].v1.disp.y > t)edges[i].v1.disp.y = t;
       // if(edges[i].v2.disp.x > t)edges[i].v2.disp.x = t;
       // if(edges[i].v2.disp.y > t)edges[i].v2.disp.y = t;
     }
-    w = 2000; l=2000;
+    w=1000; l=1000;
     for (var v = 0; v < vertices.length; v++) {
       if(absolute_value(vertices[v].disp)!=0){
 
@@ -213,12 +221,18 @@ function graph_algorithm() {
         vertices[v].pos.y = (vertices[v].pos.y + (vertices[v].disp.y/absolute_value(vertices[v].disp)));
         // * min(vertices[v].disp.y, t));
         // v.pos + (v.disp/|v.disp|)
-        console.log("Pos=", vertices[v].pos);
+        // console.log("Pos=", vertices[v].pos);
         // console.log("Disp = ", (v.disp/absolute_value(v.disp)));
         // vertices[v].pos = vertices[v].pos + (v.disp/absolute_value(v.disp));
         // console.log("Pos= ", vertices[v].pos);
-        console.log("Min y ", min (w/2 , max((-w/2), vertices[v].pos.x)));
-        console.log("Min x ", min (l/2 , max((-l/2), vertices[v].pos.y)));
+        // console.log("Min y ", min (w/2 , max((-w/2), vertices[v].pos.x)));
+        // console.log("Min x ", min (l/2 , max((-l/2), vertices[v].pos.y)));
+        if (vertices[v].pos.x < 50 ) {
+          vertices[v].pos.x = 50;
+        }
+        if (vertices[v].pos.y < 50 ) {
+          vertices[v].pos.y = 50;
+        }
 
         vertices[v].pos.y = min (l/2 , max((-l/2), vertices[v].pos.y));
         vertices[v].pos.x = min (w/2 , max((-w/2), vertices[v].pos.x));

@@ -41,7 +41,7 @@ function setup() {
   print("Maxx and maxy="+maxx+" "+ maxy);
   print("Minx and miny="+minx+" "+ miny);
 
-  //noLoop();
+  // noLoop();
 }
 
 function draw(){
@@ -71,13 +71,11 @@ function draw(){
             if (yvertices[k]==yaxis[i]){
               posx =  xstart + ((xend-xstart)*j/xvertices.length);
               posy =  ystart + ((yend-ystart)*k/yvertices.length);
-              rect(posx, posy, space, space);
-              //print (xaxis[i],yaxis[i],i,j,k,posx,posy);
-              if (mouseX<=posx+shift && mouseX>=posx-shift && mouseY<=posy+shift && mouseY>=posy-shift){
-                fill("black");pos_string=""+xaxis[i]+","+yaxis[i];
-                text(pos_string,mouseX,mouseY);fill("pink");
+              if (mouseX<=posx+space && mouseX>=posx && mouseY<=posy+space && mouseY>=posy){
+                fill("black");pos_string=""+xvertices[j]+","+yvertices[k];
+                text(pos_string,posx+space,posy+space);fill("aqua");
               }
-              //exit();
+              rect(posx, posy, space, space);fill("pink");
             }
           }
         }

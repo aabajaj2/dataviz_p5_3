@@ -41,7 +41,7 @@ function setup() {
   print("Maxx and maxy="+maxx+" "+ maxy);
   print("Minx and miny="+minx+" "+ miny);
 
-  // noLoop();
+  //noLoop();
 }
 
 function draw(){
@@ -64,39 +64,25 @@ function draw(){
   for (var i = 0;  i<xaxis.length; i++) {
     fill("pink");
     for (var j = 0; j <xvertices.length; j++) {
+      line(xstart+j*space,ystart,xstart+j*space,yend);
+      line(xstart,ystart+j*space,xend,ystart+j*space);
         if (xaxis[i]==xvertices[j]){
           for (var k = 0; k < yvertices.length; k++) {
-            line(xstart+j*space,ystart,xstart+j*space,yend);
-            line(xstart,ystart+j*space,xend,ystart+j*space);
             if (yvertices[k]==yaxis[i]){
               posx =  xstart + ((xend-xstart)*j/xvertices.length);
               posy =  ystart + ((yend-ystart)*k/yvertices.length);
               rect(posx, posy, space, space);
               //print (xaxis[i],yaxis[i],i,j,k,posx,posy);
+              if (mouseX<=posx+shift && mouseX>=posx-shift && mouseY<=posy+shift && mouseY>=posy-shift){
+                fill("black");pos_string=""+xaxis[i]+","+yaxis[i];
+                text(pos_string,mouseX,mouseY);fill("pink");
+              }
               //exit();
             }
           }
         }
     }
   }
-
-  //Interaction
-  for (var i = 0;  i<xaxis.length; i++) {
-    fill("pink");
-    for (var j = 0; j <xvertices.length; j++) {
-        if (xaxis[i]==xvertices[j]){
-          for (var k = 0; k < yvertices.length; k++) {
-            if (mouseX<=posx+shift && mouseX>=posx-shift && mouseY<=posy+shift && mouseY>=posy-shift){
-              fill("black");pos_string=""+xaxis[i]+","+yaxis[i];
-              text(pos_string,mouseX,mouseY);fill("pink");
-            }
-              // print (xaxis[i],yaxis[i],i,j,k,posx,posy);
-              //exit();
-            }
-          }
-        }
-    }
-
 
   //labels
   fill('black');

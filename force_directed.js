@@ -79,25 +79,31 @@ function draw(){
   shift = 10;
   //randomly disperse nodes
   for (var i = 0; i < vertices.length; i++) {
-    fill('aqua');
-    ellipse(vertices[i].pos.x, vertices[i].pos.y, 10, 10);
+      fill('aqua');
+      ellipse(vertices[i].pos.x, vertices[i].pos.y, 10, 10);
 
-    if (mouseX<=vertices[i].pos.x+shift && mouseX>=vertices[i].pos.x-shift
-    && mouseY<=vertices[i].pos.y+shift && mouseY>=vertices[i].pos.y-shift) {
-      fill("black");
-      pos_string=""+vertices[i].value;
-      text(pos_string,vertices[i].pos.x,vertices[i].pos.y);fill("pink");
-      // givenvalue = vertices[i].value;
-      // for (var i = 0; i < edges.length; i++) {
-      //   if(edges[i].v1.value==givenvalue || edges[i].v2.value==givenvalue){
-      //     stroke(52);fill('purple');
-      //     line(edges[i].v1.pos.x, edges[i].v1.pos.y, edges[i].v2.pos.x, edges[i].v2.pos.y);
-      //     stroke(1);
-      //   }
-      // }
-      // line(edges[i].v1.pos.x, edges[i].v1.pos.y, edges[i].v2.pos.x, edges[i].v2.pos.y);
+      if (mouseX<=vertices[i].pos.x+shift && mouseX>=vertices[i].pos.x-shift
+        && mouseY<=vertices[i].pos.y+shift && mouseY>=vertices[i].pos.y-shift){
+        fill("black");
+        pos_string=""+vertices[i].value;
+        text(pos_string,mouseX,mouseY);fill("pink");
+      }
     }
-  }
+
+    for (var i = 0; i < edges.length; i++) {
+      stroke('grey');strokeWeight(1);
+      if ((mouseX<=edges[i].v1.pos.x+shift && mouseX>=edges[i].v1.pos.x-shift
+        && mouseY<=edges[i].v1.pos.y+shift && mouseY>=edges[i].v1.pos.y-shift) ||
+        (mouseX<=edges[i].v2.pos.x+shift && mouseX>=edges[i].v2.pos.x-shift
+          && mouseY<=edges[i].v2.pos.y+shift && mouseY>=edges[i].v2.pos.y-shift)){
+            stroke('black');strokeWeight(3);
+          }
+          else {
+            stroke('grey');
+          }
+      line(edges[i].v1.pos.x, edges[i].v1.pos.y, edges[i].v2.pos.x, edges[i].v2.pos.y);
+    }
+    stroke('black');strokeWeight(1);
 
   for (var i = 0; i < edges.length; i++) {
     stroke('grey');
@@ -149,11 +155,11 @@ class vector{
 }
 
 function calculate_attractive_force(x, k) {
-  return (Math.pow(x,2.5)/k);
+  return (Math.pow(x, 2)/k);
 }
 
 function calculate_repulsive_force(x, k) {
-  return (Math.pow(k,2)/x);
+  return (Math.pow(k, 2)/x);
 }
 
 function delta(v, u) {

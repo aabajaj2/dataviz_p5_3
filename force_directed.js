@@ -46,16 +46,16 @@ function setup() {
   V = xvertices.length;
   place_nodes_x = create_random_array(V, 50, 700);
   place_nodes_y = create_random_array(V, 50, 700);
-  area = w*h;
+  area = width*height;
   print(area, V);
 
-  var myVertex = new vertex(2, 3, 4, 5);
-  var myVertex2 = new vertex(10, 10, 10, 10);
-  var myEdge = new edge(myVertex, myVertex2);
-  var ans = delta(myVertex, myVertex2);
-  var check = new vector(3, 4);
-  console.log(absolute_value(check));
-  console.log(ans);
+  // var myVertex = new vertex(2, 3, 4, 5);
+  // var myVertex2 = new vertex(10, 10, 10, 10);
+  // var myEdge = new edge(myVertex, myVertex2);
+  // var ans = delta(myVertex, myVertex2);
+  // var check = new vector(3, 4);
+  // // console.log(absolute_value(check));
+  // // console.log(ans);
 
   //Graph Algorithm Setup
   k = Math.sqrt(area/V);
@@ -82,11 +82,20 @@ function draw(){
     fill('aqua');
     ellipse(vertices[i].pos.x, vertices[i].pos.y, 10, 10);
 
-    if (mouseX<=place_nodes_x[i]+shift && mouseX>=place_nodes_x[i]-shift
-      && mouseY<=place_nodes_y[i]+shift && mouseY>=place_nodes_y[i]-shift){
+    if (mouseX<=vertices[i].pos.x+shift && mouseX>=vertices[i].pos.x-shift
+    && mouseY<=vertices[i].pos.y+shift && mouseY>=vertices[i].pos.y-shift) {
       fill("black");
       pos_string=""+vertices[i].value;
-      text(pos_string,mouseX,mouseY);fill("pink");
+      text(pos_string,vertices[i].pos.x,vertices[i].pos.y);fill("pink");
+      // givenvalue = vertices[i].value;
+      // for (var i = 0; i < edges.length; i++) {
+      //   if(edges[i].v1.value==givenvalue || edges[i].v2.value==givenvalue){
+      //     stroke(52);fill('purple');
+      //     line(edges[i].v1.pos.x, edges[i].v1.pos.y, edges[i].v2.pos.x, edges[i].v2.pos.y);
+      //     stroke(1);
+      //   }
+      // }
+      // line(edges[i].v1.pos.x, edges[i].v1.pos.y, edges[i].v2.pos.x, edges[i].v2.pos.y);
     }
   }
 
@@ -95,7 +104,7 @@ function draw(){
     line(edges[i].v1.pos.x, edges[i].v1.pos.y, edges[i].v2.pos.x, edges[i].v2.pos.y);
   }
   stroke('black');
-  for (var i = 0; i < 10; i++) {
+  for (var i = 0; i < 5; i++) {
     graph_algorithm();
     // t = cool(t);
   }
@@ -140,7 +149,7 @@ class vector{
 }
 
 function calculate_attractive_force(x, k) {
-  return (Math.pow(x,3)/k);
+  return (Math.pow(x,2.5)/k);
 }
 
 function calculate_repulsive_force(x, k) {

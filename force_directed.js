@@ -13,12 +13,12 @@ var t = -1;
 
 function preload() {
   //my table is comma separated value "csv“ and has a header specifying the columns labels
-  table = loadTable('5edges.csv', 'csv');
+  table = loadTable('3980edges.csv', 'csv');
 }
 function setup() {
 
   //count the columns
-  var width = 1000, height = 1000, margin = 20,
+  var width = 2000, height = 2000, margin = 20,
   w = width - 2 * margin,
   h = height - 2 * margin;
   createCanvas(width, height);
@@ -35,8 +35,6 @@ function setup() {
     }
   }
 
-  // print("Length xaxis= ", xaxis.length, yaxis.length);
-  // print("Length = ", xvertices.length, yvertices.length);
   xvertices.sort(function(a, b){return a-b});
   yvertices.sort(function(a, b){return a-b});
 
@@ -84,22 +82,23 @@ function draw(){
     fill('aqua');
     ellipse(vertices[i].pos.x, vertices[i].pos.y, 10, 10);
 
-      if (mouseX<=place_nodes_x[i]+shift && mouseX>=place_nodes_x[i]-shift
-        && mouseY<=place_nodes_y[i]+shift && mouseY>=place_nodes_y[i]-shift){
-        fill("black");
-        pos_string=""+vertices[i].value;
-        text(pos_string,mouseX,mouseY);fill("pink");
-      }
+    if (mouseX<=place_nodes_x[i]+shift && mouseX>=place_nodes_x[i]-shift
+      && mouseY<=place_nodes_y[i]+shift && mouseY>=place_nodes_y[i]-shift){
+      fill("black");
+      pos_string=""+vertices[i].value;
+      text(pos_string,mouseX,mouseY);fill("pink");
     }
+  }
 
   for (var i = 0; i < edges.length; i++) {
     stroke('grey');
     line(edges[i].v1.pos.x, edges[i].v1.pos.y, edges[i].v2.pos.x, edges[i].v2.pos.y);
   }
   stroke('black');
-  // for (var i = 0; i < 5; i++) {
+  for (var i = 0; i < 10; i++) {
     graph_algorithm();
-  // }
+    // t = cool(t);
+  }
 }
 
 function create_random_array(num_elements,min,max) {
@@ -141,15 +140,11 @@ class vector{
 }
 
 function calculate_attractive_force(x, k) {
-  return ((x*x)/k);
+  return (Math.pow(x,3)/k);
 }
 
 function calculate_repulsive_force(x, k) {
-  if(x!=0){
-    return ((k*k)/x);
-  }else {
-    return ((k*k)/0.0000001);
-  }
+  return (Math.pow(k,2)/x);
 }
 
 function delta(v, u) {
@@ -157,88 +152,78 @@ function delta(v, u) {
 }
 
 function absolute_value(v) {
-  d = Math.sqrt(Math.pow(v.x, 2) + Math.pow(v.y, 2));
-  if (d==0) {
-    return 0.000001;
-  }else {
-    return d;
-  }
+  return (Math.sqrt(Math.pow(v.x, 2) + Math.pow(v.y, 2)));
 }
 
 function xlookup(v) {
   for (var i = 0; i < vertices.length; i++) {
     if(vertices[i].value == v){
-      // console.log(vertices[i]);
       return vertices[i];
     }
   }
 }
 
 function cool(t){
-  return (t-(1/t));
+  return (t*0.5);
 }
 
 function graph_algorithm() {
-  for (var i = 0; i < vertices.length; i++) {
-    vertices[i].disp.x = 0;
-    vertices[i].disp.y = 0;
-    for (var j = 0; j < vertices.length; j++) {
-      if(vertices[j] != vertices[i]){
-        d = delta(vertices[i], vertices[j]);
-        vertices[i].disp.x = vertices[i].disp.x + (d.x/absolute_value(d)
-        * calculate_repulsive_force(absolute_value(d), k));
-        vertices[i].disp.y = vertices[i].disp.y + (d.y/absolute_value(d)
-        * calculate_repulsive_force(absolute_value(d), k));
-      }
-      // console.log(vertices[j].pos.x, vertices[j].pos.y);
-    }
-    for (var i = 0; i < edges.length; i++) {
-      d = delta(edges[i].v1, edges[i].v2);
-      // console.log("Delta = ", absolute_value(d));
 
-      edges[i].v1.disp.x = edges[i].v1.disp.x + (d.x/absolute_value(d))
-      * calculate_repulsive_force(absolute_value(d), k);
-      edges[i].v1.disp.y = edges[i].v1.disp.y + (d.y/absolute_value(d))
-      * calculate_repulsive_force(absolute_value(d), k);
-      edges[i].v2.disp.x = edges[i].v2.disp.x + (d.x/absolute_value(d))
-      * calculate_repulsive_force(absolute_value(d), k);
-      edges[i].v2.disp.y = edges[i].v2.disp.y + (d.y/absolute_value(d))
-      * calculate_repulsive_force(absolute_value(d), k);
-      // console.log("Displacement x = ", edges[i].v1.disp.x);
-      // console.log("Displacement y= ", edges[i].v1.disp.y);
+  // Vertices v and u calculate_repulsive_force
+  for (var i = 0; i < vertices.length; i++) {
+      vertices[i].disp.x = 0;
+      vertices[i].disp.y = 0;
+      for (var j = 0; j < vertices.length; j++) {
+        if(vertices[j] != vertices[i]){
+          d = delta(vertices[i], vertices[j]);
+          deltamagnitude = absolute_value(d);
+          if(deltamagnitude==0){
+            deltamagnitude = 0.000000001;
+          }
+          vertices[i].disp.x = vertices[i].disp.x + (d.x/deltamagnitude)*calculate_repulsive_force(absolute_value(d), k);
+          vertices[i].disp.y = vertices[i].disp.y + (d.y/deltamagnitude)*calculate_repulsive_force(absolute_value(d), k);
+        }
+      }
+    }
+
+    //For edges calculate_attractive_force
+    for (var e = 0; e < edges.length; e++) {
+      d = delta(edges[e].v1, edges[e].v2);
+      deltamag = absolute_value(d);
+      if(deltamag==0){
+        deltamag = 0.000000001;
+      }
+      edges[e].v1.disp.x = edges[e].v1.disp.x - (d.x/deltamag)*calculate_attractive_force(absolute_value(d), k);
+      edges[e].v1.disp.y = edges[e].v1.disp.y - (d.y/deltamag)*calculate_attractive_force(absolute_value(d), k);
+      edges[e].v2.disp.x = edges[e].v2.disp.x + (d.x/deltamag)*calculate_attractive_force(absolute_value(d), k);
+      edges[e].v2.disp.y = edges[e].v2.disp.y + (d.y/deltamag)*calculate_attractive_force(absolute_value(d), k);
+      // console.log("Displacement before= ", edges[e].v1);
+      // console.log("Displacement after= ", edges[e].v1.disp);
 
       // if(edges[i].v1.disp.x > t)edges[i].v1.disp.x = t;
       // if(edges[i].v1.disp.y > t)edges[i].v1.disp.y = t;
       // if(edges[i].v2.disp.x > t)edges[i].v2.disp.x = t;
       // if(edges[i].v2.disp.y > t)edges[i].v2.disp.y = t;
     }
-    w=1000; l=1000;
-    for (var v = 0; v < vertices.length; v++) {
-      if(absolute_value(vertices[v].disp)!=0){
 
-        vertices[v].pos.x = (vertices[v].pos.x + (vertices[v].disp.x/absolute_value(vertices[v].disp)));
-        // // * min(vertices[v].disp.x, t));
-        vertices[v].pos.y = (vertices[v].pos.y + (vertices[v].disp.y/absolute_value(vertices[v].disp)));
+    w=1500; l=1500;
+    for (var v = 0; v < vertices.length; v++) {
+        dispmag = absolute_value(vertices[v].disp);
+        if(dispmag==0){
+          dispmag = 0.000000001;
+        }
+        vertices[v].pos.x = (vertices[v].pos.x + (vertices[v].disp.x/dispmag));
+        // * min(vertices[v].disp.x, t));
+        vertices[v].pos.y = (vertices[v].pos.y + (vertices[v].disp.y/dispmag));
         // * min(vertices[v].disp.y, t));
-        // v.pos + (v.disp/|v.disp|)
-        // console.log("Pos=", vertices[v].pos);
-        // console.log("Disp = ", (v.disp/absolute_value(v.disp)));
-        // vertices[v].pos = vertices[v].pos + (v.disp/absolute_value(v.disp));
-        // console.log("Pos= ", vertices[v].pos);
-        // console.log("Min y ", min (w/2 , max((-w/2), vertices[v].pos.x)));
-        // console.log("Min x ", min (l/2 , max((-l/2), vertices[v].pos.y)));
         if (vertices[v].pos.x < 50 ) {
           vertices[v].pos.x = 50;
         }
         if (vertices[v].pos.y < 50 ) {
           vertices[v].pos.y = 50;
         }
-
-        vertices[v].pos.y = min (l/2 , max((-l/2), vertices[v].pos.y));
         vertices[v].pos.x = min (w/2 , max((-w/2), vertices[v].pos.x));
-      }
+        vertices[v].pos.y = min (l/2 , max((-l/2), vertices[v].pos.y));
     }
-    t = cool(t);
-  }
   return true;
 }
